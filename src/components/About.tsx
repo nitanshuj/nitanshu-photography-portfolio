@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Instagram, Globe, Linkedin, Camera, Award, Users } from 'lucide-react';
+import { Instagram, Globe, Linkedin, Camera, Settings } from 'lucide-react';
 import portraitImage from '@/assets/nitanshu-potrait-info.jpg';
 
 const About = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [counters, setCounters] = useState({ photos: 0, projects: 0, clients: 0 });
+  const [counters, setCounters] = useState({ photos: 0 });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -27,7 +27,7 @@ const About = () => {
   }, []);
 
   const animateCounters = () => {
-    const targets = { photos: 200, projects: 12, clients: 5 };
+    const targets = { photos: 1000 };
     const duration = 2000;
     const steps = 60;
     const increment = duration / steps;
@@ -100,25 +100,40 @@ const About = () => {
               </div>
 
             </div>
+            
+            {/* My Rig Section */}
+            <div className="card-gradient p-8 rounded-2xl mt-6">
+              <div className="flex items-center mb-4">
+                <Settings className="mr-3 text-accent" size={24} />
+                <h3 className="text-2xl font-bold text-gradient">My Rig</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="bg-secondary/50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-accent mb-2">Camera Body</h4>
+                  <p className="text-muted-foreground">Sony Alpha 7 III</p>
+                </div>
+                <div className="bg-secondary/50 p-4 rounded-lg">
+                  <h4 className="font-semibold text-accent mb-2">Support</h4>
+                  <p className="text-muted-foreground">Smallrig Tripod</p>
+                </div>
+                <div className="bg-secondary/50 p-4 rounded-lg md:col-span-2">
+                  <h4 className="font-semibold text-accent mb-2">Lenses</h4>
+                  <div className="space-y-2">
+                    <p className="text-muted-foreground">• Sony FE 50mm F1.8</p>
+                    <p className="text-muted-foreground">• Viltrox 20mm F2.8</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Stats */}
-        <div className={`grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 section-fade ${isVisible ? 'visible' : ''}`}>
+        <div className={`flex justify-center mt-16 section-fade ${isVisible ? 'visible' : ''}`}>
           <div className="text-center card-gradient p-8 rounded-2xl">
             <Camera className="mx-auto mb-4 text-accent" size={48} />
             <div className="text-4xl font-bold text-gradient mb-2">{counters.photos.toLocaleString()}+</div>
             <div className="text-muted-foreground">Photos Captured</div>
-          </div>
-          <div className="text-center card-gradient p-8 rounded-2xl">
-            <Award className="mx-auto mb-4 text-accent" size={48} />
-            <div className="text-4xl font-bold text-gradient mb-2">{counters.projects}+</div>
-            <div className="text-muted-foreground">AI Projects</div>
-          </div>
-          <div className="text-center card-gradient p-8 rounded-2xl">
-            <Users className="mx-auto mb-4 text-accent" size={48} />
-            <div className="text-4xl font-bold text-gradient mb-2">{counters.clients}+</div>
-            <div className="text-muted-foreground">Happy Clients</div>
           </div>
         </div>
       </div>
