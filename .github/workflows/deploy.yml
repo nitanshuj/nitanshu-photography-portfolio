@@ -27,6 +27,8 @@ jobs:
       run: npm run build
       env:
         VITE_CLOUDINARY_CLOUD_NAME: ${{ secrets.VITE_CLOUDINARY_CLOUD_NAME }}
+        VITE_CLOUDINARY_API_KEY: ${{ secrets.VITE_CLOUDINARY_API_KEY }}
+        VITE_CLOUDINARY_API_SECRET: ${{ secrets.VITE_CLOUDINARY_API_SECRET }}
 
     - name: Deploy to Netlify
       uses: nwtgck/actions-netlify@v3.0
