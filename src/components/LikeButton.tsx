@@ -34,9 +34,10 @@ const LikeButton = ({ imageId, className = '' }: LikeButtonProps) => {
   }, [imageId]);
 
   const handleLike = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent opening lightbox when clicking like button
+    e.preventDefault();
+    e.stopPropagation();
 
-    if (isLoading) return; // Prevent double-clicks
+    if (isLoading) return;
 
     setIsLoading(true);
     const newIsLiked = !isLiked;
@@ -70,13 +71,21 @@ const LikeButton = ({ imageId, className = '' }: LikeButtonProps) => {
 
   return (
     <button
+      type="button"
       onClick={handleLike}
       disabled={isLoading}
-      className={`flex items-center gap-1 px-2 py-1 rounded-md transition-all duration-200 ${
+      className={`flex items-center gap-1 px-3 py-2 rounded-md transition-all duration-200 border-2 relative z-10 ${
         isLiked
-          ? 'bg-red-500/90 text-white hover:bg-red-600/90'
-          : 'bg-black/50 text-white hover:bg-black/70'
-      } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''} ${className}`}
+          ? 'bg-red-500 text-white border-red-500 hover:bg-red-600'
+          : 'bg-gray-100 text-gray-800 border-gray-300 hover:bg-gray-200'
+      } ${isLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg'} ${className}`}
+      style={{
+        pointerEvents: 'auto',
+        position: 'relative',
+        zIndex: 10,
+        minWidth: '60px',
+        minHeight: '36px'
+      }}
     >
       <Heart
         size={16}

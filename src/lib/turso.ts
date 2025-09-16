@@ -24,12 +24,17 @@ export async function getLikeCount(imageId: string): Promise<number> {
   if (!isTursoAvailable || !tursoClient) {
     console.warn('Turso database not available, using localStorage fallback');
     // Fallback to localStorage for like counts
-    const savedLikes = localStorage.getItem('image-likes');
-    if (savedLikes) {
-      const likesData = JSON.parse(savedLikes);
-      return likesData[imageId]?.count || 0;
+    try {
+      const savedLikes = localStorage.getItem('image-likes');
+      if (savedLikes) {
+        const likesData = JSON.parse(savedLikes);
+        return likesData[imageId]?.count || 0;
+      }
+      return 0;
+    } catch (error) {
+      console.error('Error accessing localStorage:', error);
+      return 0;
     }
-    return 0;
   }
 
   try {
@@ -50,13 +55,18 @@ export async function incrementLike(imageId: string): Promise<number> {
   if (!isTursoAvailable || !tursoClient) {
     console.warn('Turso database not available, using localStorage fallback');
     // Fallback to localStorage
-    const savedLikes = localStorage.getItem('image-likes');
-    const likesData = savedLikes ? JSON.parse(savedLikes) : {};
-    const currentCount = likesData[imageId]?.count || 0;
-    const newCount = currentCount + 1;
-    likesData[imageId] = { count: newCount };
-    localStorage.setItem('image-likes', JSON.stringify(likesData));
-    return newCount;
+    try {
+      const savedLikes = localStorage.getItem('image-likes');
+      const likesData = savedLikes ? JSON.parse(savedLikes) : {};
+      const currentCount = likesData[imageId]?.count || 0;
+      const newCount = currentCount + 1;
+      likesData[imageId] = { count: newCount };
+      localStorage.setItem('image-likes', JSON.stringify(likesData));
+      return newCount;
+    } catch (error) {
+      console.error('Error accessing localStorage:', error);
+      return 0;
+    }
   }
 
   try {
@@ -89,13 +99,18 @@ export async function decrementLike(imageId: string): Promise<number> {
   if (!isTursoAvailable || !tursoClient) {
     console.warn('Turso database not available, using localStorage fallback');
     // Fallback to localStorage
-    const savedLikes = localStorage.getItem('image-likes');
-    const likesData = savedLikes ? JSON.parse(savedLikes) : {};
-    const currentCount = likesData[imageId]?.count || 0;
-    const newCount = Math.max(0, currentCount - 1);
-    likesData[imageId] = { count: newCount };
-    localStorage.setItem('image-likes', JSON.stringify(likesData));
-    return newCount;
+    try {
+      const savedLikes = localStorage.getItem('image-likes');
+      const likesData = savedLikes ? JSON.parse(savedLikes) : {};
+      const currentCount = likesData[imageId]?.count || 0;
+      const newCount = Math.max(0, currentCount - 1);
+      likesData[imageId] = { count: newCount };
+      localStorage.setItem('image-likes', JSON.stringify(likesData));
+      return newCount;
+    } catch (error) {
+      console.error('Error accessing localStorage:', error);
+      return 0;
+    }
   }
 
   try {
