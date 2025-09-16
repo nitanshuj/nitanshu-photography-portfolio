@@ -1,9 +1,15 @@
 import { createClient } from '@libsql/client';
 
-const tursoClient = createClient({
-  url: import.meta.env.VITE_TURSO_DATABASE_URL || '',
-  authToken: import.meta.env.VITE_TURSO_AUTH_TOKEN || '',
-});
+// Check if Turso environment variables are available
+const TURSO_URL = import.meta.env.VITE_TURSO_DATABASE_URL;
+const TURSO_TOKEN = import.meta.env.VITE_TURSO_AUTH_TOKEN;
+
+const isTursoAvailable = TURSO_URL && TURSO_TOKEN && TURSO_URL !== 'YOUR_DATABASE_URL_HERE' && TURSO_TOKEN !== 'YOUR_AUTH_TOKEN_HERE';
+
+const tursoClient = isTursoAvailable ? createClient({
+  url: TURSO_URL,
+  authToken: TURSO_TOKEN,
+}) : null;
 
 export interface ImageLike {
   id: number;
@@ -15,6 +21,17 @@ export interface ImageLike {
 
 // Get like count for a specific image
 export async function getLikeCount(imageId: string): Promise<number> {
+  if (!isTursoAvailable || !tursoClient) {
+    console.warn('Turso database not available, using localStorage fallback');
+    // Fallback to localStorage for like counts
+    const savedLikes = localStorage.getItem('image-likes');
+    if (savedLikes) {
+      const likesData = JSON.parse(savedLikes);
+      return likesData[imageId]?.count || 0;
+    }
+    return 0;
+  }
+
   try {
     const result = await tursoClient.execute({
       sql: 'SELECT like_count FROM image_likes WHERE image_id = ?',
@@ -30,6 +47,18 @@ export async function getLikeCount(imageId: string): Promise<number> {
 
 // Increment like count for an image
 export async function incrementLike(imageId: string): Promise<number> {
+  if (!isTursoAvailable || !tursoClient) {
+    console.warn('Turso database not available, using localStorage fallback');
+    // Fallback to localStorage
+    const savedLikes = localStorage.getItem('image-likes');
+    const likesData = savedLikes ? JSON.parse(savedLikes) : {};
+    const currentCount = likesData[imageId]?.count || 0;
+    const newCount = currentCount + 1;
+    likesData[imageId] = { count: newCount };
+    localStorage.setItem('image-likes', JSON.stringify(likesData));
+    return newCount;
+  }
+
   try {
     // First, try to increment existing record
     const updateResult = await tursoClient.execute({
@@ -57,6 +86,18 @@ export async function incrementLike(imageId: string): Promise<number> {
 
 // Decrement like count for an image
 export async function decrementLike(imageId: string): Promise<number> {
+  if (!isTursoAvailable || !tursoClient) {
+    console.warn('Turso database not available, using localStorage fallback');
+    // Fallback to localStorage
+    const savedLikes = localStorage.getItem('image-likes');
+    const likesData = savedLikes ? JSON.parse(savedLikes) : {};
+    const currentCount = likesData[imageId]?.count || 0;
+    const newCount = Math.max(0, currentCount - 1);
+    likesData[imageId] = { count: newCount };
+    localStorage.setItem('image-likes', JSON.stringify(likesData));
+    return newCount;
+  }
+
   try {
     // Update existing record, don't allow negative counts
     await tursoClient.execute({
