@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { aiGeneratedImages, getCloudinaryUrl, cloudinaryTransforms, type CloudinaryImage } from '@/lib/cloudinary';
+import LikeButton from './LikeButton';
 
 const aiCategories = ['All', 'Landscapes', 'Abstract', 'Futuristic', 'Architecture', 'Nature', 'Space'];
 
@@ -70,7 +71,7 @@ const AIGenerated = () => {
           <div className="flex items-center justify-center gap-3 mb-6">
             <Sparkles className="text-accent" size={32} />
             <h2 className="text-4xl md:text-5xl font-bold text-gradient">
-              AI Generated
+              My AI Generated Images
             </h2>
             <Sparkles className="text-accent" size={32} />
           </div>
@@ -96,23 +97,43 @@ const AIGenerated = () => {
           ))}
         </div>
 
+        {/* Coming Soon Message */}
+        <div className={`text-center mb-12 section-fade ${isVisible ? 'visible' : ''}`}>
+          <p className="text-2xl font-bold text-muted-foreground">
+            **Coming Soon**
+          </p>
+        </div>
+
         {/* Gallery Grid */}
-        <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 section-fade ${isVisible ? 'visible' : ''}`}>
+        <div className={`columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 section-fade ${isVisible ? 'visible' : ''}`}>
           {filteredImages.map((image, index) => (
             <div
               key={image.id}
-              className="gallery-item"
+              className="gallery-item relative break-inside-avoid mb-6"
               style={{ animationDelay: `${index * 0.1}s` }}
               onClick={() => openLightbox(image.id)}
             >
-              <img
-                src={getCloudinaryUrl(image.publicId, cloudinaryTransforms.gallery)}
-                alt={image.alt}
-                className="w-full h-64 object-cover rounded-lg"
-                loading="lazy"
-              />
-              <div className="absolute top-2 right-2 bg-accent/90 text-accent-foreground px-2 py-1 rounded-md text-sm font-medium">
-                AI
+              <div className="relative group cursor-pointer">
+                <img
+                  src={getCloudinaryUrl(image.publicId, cloudinaryTransforms.gallery)}
+                  alt={image.alt}
+                  className="w-full rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 group-hover:scale-[1.02]"
+                  loading="lazy"
+                />
+                <div className="absolute top-2 right-2 bg-accent/90 text-accent-foreground px-2 py-1 rounded-md text-sm font-medium shadow-lg">
+                  AI
+                </div>
+                <div className="absolute bottom-2 right-2 opacity-90 group-hover:opacity-100 transition-opacity duration-200">
+                  <LikeButton imageId={image.id} />
+                </div>
+                {/* Optional: Add image title overlay on hover */}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 rounded-lg">
+                  <div className="absolute bottom-0 left-0 right-0 p-4 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                    <p className="text-sm font-medium bg-black/50 backdrop-blur-sm rounded px-2 py-1">
+                      {image.alt}
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
