@@ -10,11 +10,3 @@
   to = "/index.html"
   status = 200
 
-[context.production.environment]
-  VITE_CLOUDINARY_CLOUD_NAME = "your_cloud_name_here"
-
-[context.deploy-preview.environment]
-  VITE_CLOUDINARY_CLOUD_NAME = "your_cloud_name_here"
-
-[context.branch-deploy.environment]
-  VITE_CLOUDINARY_CLOUD_NAME = "your_cloud_name_here"
