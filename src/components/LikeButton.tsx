@@ -5,9 +5,10 @@ import { getLikeCount, incrementLike, decrementLike } from '@/lib/turso';
 interface LikeButtonProps {
   imageId: string;
   className?: string;
+  isAI?: boolean;
 }
 
-const LikeButton = ({ imageId, className = '' }: LikeButtonProps) => {
+const LikeButton = ({ imageId, className = '', isAI = false }: LikeButtonProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -16,7 +17,7 @@ const LikeButton = ({ imageId, className = '' }: LikeButtonProps) => {
     // Load initial like count from Turso
     const loadLikeCount = async () => {
       try {
-        const count = await getLikeCount(imageId);
+        const count = await getLikeCount(imageId, isAI);
         setLikeCount(count);
 
         // Check localStorage for user's like status
@@ -46,9 +47,9 @@ const LikeButton = ({ imageId, className = '' }: LikeButtonProps) => {
       // Update global like count in Turso
       let newCount;
       if (newIsLiked) {
-        newCount = await incrementLike(imageId);
+        newCount = await incrementLike(imageId, isAI);
       } else {
-        newCount = await decrementLike(imageId);
+        newCount = await decrementLike(imageId, isAI);
       }
 
       // Update user's local like status

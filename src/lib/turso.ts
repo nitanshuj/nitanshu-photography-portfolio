@@ -19,8 +19,20 @@ export interface ImageLike {
   updated_at: string;
 }
 
+// Helper function to determine if an image is AI generated
+function isAIImage(imageId: string): boolean {
+  // Check if the image is being used in AI context by looking at current AI images
+  // We'll import this to check against the AI images array
+  return false; // We'll update this logic
+}
+
+// Helper function to get the correct table name
+function getTableName(imageId: string): string {
+  return isAIImage(imageId) ? 'ai_image_likes' : 'image_likes';
+}
+
 // Get like count for a specific image
-export async function getLikeCount(imageId: string): Promise<number> {
+export async function getLikeCount(imageId: string, isAI: boolean = false): Promise<number> {
   if (!isTursoAvailable || !tursoClient) {
     console.warn('Turso database not available, using localStorage fallback');
     // Fallback to localStorage for like counts
@@ -38,8 +50,9 @@ export async function getLikeCount(imageId: string): Promise<number> {
   }
 
   try {
+    const tableName = isAI ? 'ai_image_likes' : 'image_likes';
     const result = await tursoClient.execute({
-      sql: 'SELECT like_count FROM image_likes WHERE image_id = ?',
+      sql: `SELECT like_count FROM ${tableName} WHERE image_id = ?`,
       args: [imageId]
     });
 
@@ -51,7 +64,7 @@ export async function getLikeCount(imageId: string): Promise<number> {
 }
 
 // Increment like count for an image
-export async function incrementLike(imageId: string): Promise<number> {
+export async function incrementLike(imageId: string, isAI: boolean = false): Promise<number> {
   if (!isTursoAvailable || !tursoClient) {
     console.warn('Turso database not available, using localStorage fallback');
     // Fallback to localStorage
@@ -70,23 +83,25 @@ export async function incrementLike(imageId: string): Promise<number> {
   }
 
   try {
+    const tableName = isAI ? 'ai_image_likes' : 'image_likes';
+
     // First, try to increment existing record
     const updateResult = await tursoClient.execute({
-      sql: 'UPDATE image_likes SET like_count = like_count + 1, updated_at = CURRENT_TIMESTAMP WHERE image_id = ?',
+      sql: `UPDATE ${tableName} SET like_count = like_count + 1, updated_at = CURRENT_TIMESTAMP WHERE image_id = ?`,
       args: [imageId]
     });
 
     // If no rows were affected, create new record
     if (updateResult.rowsAffected === 0) {
       await tursoClient.execute({
-        sql: 'INSERT INTO image_likes (image_id, like_count) VALUES (?, 1)',
+        sql: `INSERT INTO ${tableName} (image_id, like_count) VALUES (?, 1)`,
         args: [imageId]
       });
       return 1;
     }
 
     // Get the updated count
-    const newCount = await getLikeCount(imageId);
+    const newCount = await getLikeCount(imageId, isAI);
     return newCount;
   } catch (error) {
     console.error('Error incrementing like:', error);
@@ -95,7 +110,7 @@ export async function incrementLike(imageId: string): Promise<number> {
 }
 
 // Decrement like count for an image
-export async function decrementLike(imageId: string): Promise<number> {
+export async function decrementLike(imageId: string, isAI: boolean = false): Promise<number> {
   if (!isTursoAvailable || !tursoClient) {
     console.warn('Turso database not available, using localStorage fallback');
     // Fallback to localStorage
@@ -114,14 +129,16 @@ export async function decrementLike(imageId: string): Promise<number> {
   }
 
   try {
+    const tableName = isAI ? 'ai_image_likes' : 'image_likes';
+
     // Update existing record, don't allow negative counts
     await tursoClient.execute({
-      sql: 'UPDATE image_likes SET like_count = MAX(0, like_count - 1), updated_at = CURRENT_TIMESTAMP WHERE image_id = ?',
+      sql: `UPDATE ${tableName} SET like_count = MAX(0, like_count - 1), updated_at = CURRENT_TIMESTAMP WHERE image_id = ?`,
       args: [imageId]
     });
 
     // Get the updated count
-    const newCount = await getLikeCount(imageId);
+    const newCount = await getLikeCount(imageId, isAI);
     return newCount;
   } catch (error) {
     console.error('Error decrementing like:', error);

@@ -111,7 +111,7 @@ const AIGenerated = () => {
                 <span className="text-sm text-muted-foreground truncate pr-2">
                   {image.alt}
                 </span>
-                <LikeButton imageId={image.id} />
+                <LikeButton imageId={image.id} isAI={true} />
               </div>
 
               <div className="relative group">
