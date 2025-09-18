@@ -63,12 +63,8 @@ export const galleryImages: CloudinaryImage[] = [
   { id: '23', publicId: 'Seattle-Sunset_tlc3rf', category: 'Skies', alt: 'Sunset in Seattle, USA' },
 ];
 
-// Temporary placeholder AI images until you upload to Cloudinary
+// AI Generated images uploaded to Cloudinary
 export const aiGeneratedImages: CloudinaryImage[] = [
-  // { id: '1', publicId: 'samples/animals/three-dogs', category: 'Landscapes', alt: 'AI Generated Mountain Landscape' },
-  // { id: '2', publicId: 'samples/food/spices', category: 'Abstract', alt: 'AI Generated Abstract Art' },
-  // { id: '3', publicId: 'samples/cityscapes/tokyo-street', category: 'Futuristic', alt: 'AI Generated Futuristic Scene' },
-  // { id: '4', publicId: 'samples/architecture/building-windows', category: 'Architecture', alt: 'AI Generated Architecture' },
-  // { id: '5', publicId: 'samples/landscapes/grass-and-flowers', category: 'Nature', alt: 'AI Generated Nature Scene' },
-  // { id: '6', publicId: 'samples/space/stars-galaxy', category: 'Space', alt: 'AI Generated Space Scene' },
+  { id: '1', publicId: 'Gemini-Landscape-2-Dark_epdnkp', category: 'Landscape', alt: 'Dark landscape with tree in the middle' },
+  { id: '2', publicId: 'Gemini-Landscape-1-Light_n2dlxh', category: 'Landscape', alt: 'Light landscape with tree in the middle' },
 ];
